@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Share your current tmux session with other users easily and securely
+#
+# Author: Michal Sojka <michal.sojka@cvut.cz>
+
+set -e
+
+: ${TMUX:?Error: This must be run from within tmux}
+
+socket_path=$(tmux list-sessions -F '#{socket_path}' | head -n1)
+: ${socket_path:?Cannot determine tmux socket path}
+
+guest_user=${1:?No user specified}
+
+case "$guest_user" in
+    -x)
+	setfacl --remove-all "${socket_path}"
+	setfacl --remove-all "${socket_path%/*}"
+	echo >&2 "Unshared"
+	exit 0
+	;;
+    *)
+	setfacl -m u:"$guest_user":rw "${socket_path}"
+	setfacl -m u:"$guest_user":rX "${socket_path%/*}"
+	;;
+esac
+
+attach_cmd="tmux -S $(printf %s "$socket_path") attach"
+
+write "$guest_user" <<EOF || :
+"You can attach $USER's session by running:
+
+    $attach_cmd
+
+EOF
+
+cat <<EOF
+Now, $guest_user can attach your session by running:
+
+    $attach_cmd
+
+EOF
