@@ -4,6 +4,20 @@
 #
 # Author: Michal Sojka <michal.sojka@cvut.cz>
 
+help() {
+    cat <<EOF
+Usage: $0 LOGIN
+       $0 -x
+
+Share current tmux session with another user.
+
+  LOGIN   the user to share with
+  -x      disable sharing and disconnect all other clients
+
+Report bugs to https://github.com/wentasah/tmux-share/issues.
+EOF
+}
+
 set -e
 
 : ${TMUX:?Error: This must be run from within tmux}
@@ -11,9 +25,11 @@ set -e
 socket_path=$(tmux list-sessions -F '#{socket_path}' | head -n1)
 : ${socket_path:?Cannot determine tmux socket path}
 
-guest_user=${1:?No user specified}
-
-case "$guest_user" in
+case "$1" in
+    ""|-h|--help)
+	help
+	exit 1
+	;;
     -x)
 	setfacl --remove-all "${socket_path}"
 	setfacl --remove-all "${socket_path%/*}"
@@ -22,6 +38,7 @@ case "$guest_user" in
 	exit 0
 	;;
     *)
+	guest_user=${1:?No user specified}
 	setfacl -m u:"$guest_user":rw "${socket_path}"
 	setfacl -m u:"$guest_user":rX "${socket_path%/*}"
 	;;
