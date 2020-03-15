@@ -6,8 +6,8 @@
 
 help() {
     cat <<EOF
-Usage: $0 LOGIN
-       $0 -x
+Usage: tmux-share LOGIN
+       tmux-share -x
 
 Share current tmux session with another user.
 
