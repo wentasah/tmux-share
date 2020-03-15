@@ -47,10 +47,11 @@ esac
 attach_cmd="tmux -S $(printf %s "$socket_path") attach"
 
 write "$guest_user" <<EOF || :
-"You can attach $USER's session by running:
+You can attach $USER's session by running:
 
     $attach_cmd
 
+Append "-r" for read-only access.
 EOF
 
 cat <<EOF
@@ -58,4 +59,5 @@ Now, $guest_user can attach your session by running:
 
     $attach_cmd
 
+Append "-r" for read-only access.
 EOF
