@@ -17,6 +17,7 @@ case "$guest_user" in
     -x)
 	setfacl --remove-all "${socket_path}"
 	setfacl --remove-all "${socket_path%/*}"
+	tmux detach-client -a	# Detach all other clients
 	echo >&2 "Unshared"
 	exit 0
 	;;
