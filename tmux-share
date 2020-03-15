@@ -39,6 +39,7 @@ case "$1" in
 	;;
     *)
 	guest_user=${1:?No user specified}
+	id "$guest_user" > /dev/null
 	setfacl -m u:"$guest_user":rw "${socket_path}"
 	setfacl -m u:"$guest_user":rX "${socket_path%/*}"
 	;;
