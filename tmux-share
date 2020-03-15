@@ -22,7 +22,7 @@ set -e
 
 : ${TMUX:?Error: This must be run from within tmux}
 
-socket_path=$(tmux list-sessions -F '#{socket_path}' | head -n1)
+socket_path=$(tmux display-message -p -F '#{socket_path}')
 : ${socket_path:?Cannot determine tmux socket path}
 
 case "$1" in
